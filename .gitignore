@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+credentials.json
+node_modules/
+.DS_Store
+
+# LangGraph CLI runtime state
+.langgraph_api/

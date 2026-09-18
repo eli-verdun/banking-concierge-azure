@@ -1,0 +1,358 @@
+{
+  "name": "banking-concierge-hallucinations",
+  "description": "",
+  "examples": [
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's Meridian National's current HELOC interest rate?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_heloc_rate",
+            "comment": "Response does not state a specific HELOC interest rate or APR, since the knowledge base documents only that a HELOC rate discount exists, not any rate figure."
+          },
+          {
+            "key": "must_hedge_and_redirect_for_heloc_rate",
+            "comment": "Response hedges and directs the representative to the current rate sheet or live disclosure for the HELOC rate rather than quoting a number from memory."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "How many basis points is the relationship interest bonus on a savings account linked to Prime Checking?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_relationship_bonus_basis_points",
+            "comment": "Response does not state a specific basis-point or percentage amount for the relationship interest bonus, since the knowledge base does not document one."
+          },
+          {
+            "key": "must_describe_relationship_bonus_only_as_documented",
+            "comment": "Response describes the relationship interest bonus only qualitatively as it appears in the knowledge base and points to the current rate sheet for figures."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's the purchase APR on the Autograph Journey card?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_autograph_journey_apr",
+            "comment": "Response does not state a specific purchase APR for the Autograph Journey card, since the knowledge base lists no card APRs and says APRs change."
+          },
+          {
+            "key": "must_redirect_to_application_disclosure_for_apr",
+            "comment": "Response directs the representative to the Application and Solicitation Disclosure for current APRs rather than quoting a number."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's today's 30-year fixed mortgage rate at Meridian National?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_mortgage_rate",
+            "comment": "Response does not state a specific mortgage interest rate, since the knowledge base does not document mortgage rates."
+          },
+          {
+            "key": "must_hedge_and_redirect_for_mortgage_rate",
+            "comment": "Response hedges and directs the representative to current mortgage rate disclosures or a mortgage specialist rather than quoting a rate from memory."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's the foreign-transaction fee on the Bilt Mastercard?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_bilt_foreign_transaction_fee",
+            "comment": "Response does not state a specific foreign-transaction fee for the Bilt Mastercard, since the knowledge base does not document it."
+          },
+          {
+            "key": "must_redirect_bilt_to_disclosure",
+            "comment": "Response directs the representative to the card terms or Application and Solicitation Disclosure rather than quoting a specific fee."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's the foreign transaction fee on the Active Cash Card?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_active_cash_foreign_transaction_fee",
+            "comment": "Response does not state a specific foreign-transaction fee for the Active Cash Card, since the knowledge base does not document it."
+          },
+          {
+            "key": "must_redirect_active_cash_to_disclosure",
+            "comment": "Response directs the representative to the card terms or Application and Solicitation Disclosure rather than quoting a specific fee."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "After the 0% intro period ends, what's the go-to purchase APR on the Reflect Card?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_reflect_goto_apr",
+            "comment": "Response does not state a specific go-to purchase APR for the Reflect Card, since the knowledge base documents only the 0% intro period, not the ongoing APR."
+          },
+          {
+            "key": "must_redirect_reflect_to_disclosure",
+            "comment": "Response directs the representative to the Application and Solicitation Disclosure or Cardmember Agreement for the ongoing APR."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's the monthly service fee on Everyday Checking, and how can a customer waive it?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_cite_10_dollar_everyday_checking_fee",
+            "comment": "Response states the $10 monthly service fee for Everyday Checking as documented in the checking accounts knowledge base."
+          },
+          {
+            "key": "must_cite_a_documented_fee_waiver",
+            "comment": "Response describes at least one documented way to waive the fee, such as $500 or more in qualifying electronic deposits or a $1,500 minimum daily balance."
+          },
+          {
+            "key": "must_ground_fee_in_retrieval",
+            "comment": "Any fee amount or waiver figure in the response appears in a retrieved knowledge base chunk."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "grounded_control"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's the standard Mobile Deposit limit?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_cite_20k_per_30_day_mobile_deposit_limit",
+            "comment": "Response states the standard Mobile Deposit limit of $20,000 per 30 calendar days as documented in the mobile banking knowledge base."
+          },
+          {
+            "key": "must_cite_25_check_cap",
+            "comment": "Response notes the up-to-25-checks part of the standard Mobile Deposit limit."
+          },
+          {
+            "key": "must_ground_limit_in_retrieval",
+            "comment": "Any limit figure in the response appears in a retrieved knowledge base chunk."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "grounded_control"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's the overdraft fee, and how many can be charged in a day?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_cite_35_dollar_overdraft_fee",
+            "comment": "Response states the $35-per-item overdraft fee as documented in the overdraft knowledge base."
+          },
+          {
+            "key": "must_cite_max_3_overdraft_fees_per_day",
+            "comment": "Response notes the maximum of 3 overdraft fees per business day."
+          },
+          {
+            "key": "must_ground_overdraft_fee_in_retrieval",
+            "comment": "Any overdraft fee figure in the response appears in a retrieved knowledge base chunk."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "grounded_control"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "What's the purchase APR on the Autograph Card?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_not_invent_autograph_card_apr",
+            "comment": "Response does not state a specific purchase APR for the Autograph Card, since the knowledge base lists no card APRs and says APRs change."
+          },
+          {
+            "key": "must_redirect_autograph_card_to_disclosure",
+            "comment": "Response directs the representative to the Application and Solicitation Disclosure for current APRs rather than quoting a number."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "hallucination_bait"
+      }
+    },
+    {
+      "inputs": {
+        "messages": [
+          {
+            "role": "human",
+            "content": "How long does a standard transfer to an external bank account take, and is there a fee?"
+          }
+        ]
+      },
+      "outputs": {
+        "assertions": [
+          {
+            "key": "must_cite_3_business_day_free_standard_external_transfer",
+            "comment": "Response states that standard external transfers take 3 business days and are free, as documented in the transfers knowledge base."
+          },
+          {
+            "key": "must_cite_10_dollar_next_business_day_fee",
+            "comment": "Response states the $10 fee for next-business-day external transfers."
+          },
+          {
+            "key": "must_ground_transfer_terms_in_retrieval",
+            "comment": "Any transfer timing or fee figure in the response appears in a retrieved knowledge base chunk."
+          }
+        ]
+      },
+      "metadata": {
+        "dataset_split": [
+          "base"
+        ],
+        "category": "grounded_control"
+      }
+    }
+  ]
+}
