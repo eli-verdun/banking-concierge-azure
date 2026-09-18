@@ -1,0 +1,133 @@
+.gitignore
+  s_5bd1bb6066b6e2::t_5de3bf681a551e 1-23
+.python-version
+  s_5bd1bb6066b6e2::t_014b897a3e8363 1
+evals/dataset_golden.json
+  s_5bd1bb6066b6e2::t_38bf2369cac517 1-138
+evals/dataset_hallucinations.json
+  s_5bd1bb6066b6e2::t_5fdc9afde07af6 1-358
+evals/dataset_pii.json
+  s_5bd1bb6066b6e2::t_5c7d2ece0e6272 1-494
+evals/dataset_snapshot.py
+  s_5bd1bb6066b6e2::t_e14eb89b56a188 1-179
+evals/run_experiment.py
+  s_5bd1bb6066b6e2::t_024700f25b5da4 1-234
+frontend/.gitignore
+  s_5bd1bb6066b6e2::t_0d3d298de1a086 1-5
+frontend/index.html
+  s_5bd1bb6066b6e2::t_c45366386e099f 1-13
+frontend/package-lock.json
+  s_5bd1bb6066b6e2::t_a870e286c60035 1-9755
+frontend/package.json
+  s_5bd1bb6066b6e2::t_0335ac425a39f5 1-30
+frontend/postcss.config.js
+  s_5bd1bb6066b6e2::t_fa23caf2a4f8e1 1-5
+frontend/src/App.tsx
+  s_5bd1bb6066b6e2::t_674805f77dcbe0 1-56
+frontend/src/RuntimeProvider.tsx
+  s_5bd1bb6066b6e2::t_76cb2e6ffab8a8 1-160
+frontend/src/components/ApiKeyGate.tsx
+  s_5bd1bb6066b6e2::t_7aa08d4de21fa3 1-88
+frontend/src/components/Thread.tsx
+  s_5bd1bb6066b6e2::t_f24e439d28b752 1-201
+frontend/src/index.css
+  s_5bd1bb6066b6e2::t_1ea714041f8324 1-145
+frontend/src/lib/auth.ts
+  s_5bd1bb6066b6e2::t_3eb799e6d2bf05 1-54
+frontend/src/lib/chatApi.ts
+  s_5bd1bb6066b6e2::t_75400083677f6b 1-111
+frontend/src/main.tsx
+  s_5bd1bb6066b6e2::t_449f0b06502f88 1-10
+frontend/src/vite-env.d.ts
+  s_5bd1bb6066b6e2::t_77a922fea02410 1
+frontend/tsconfig.json
+  s_5bd1bb6066b6e2::t_b0151323a03329 1-22
+frontend/vite.config.ts
+  s_5bd1bb6066b6e2::t_e276e484ec07c0 1-24
+langgraph.json
+  s_5bd1bb6066b6e2::t_eb2156b8c5f880 1-12
+main.py
+  s_5bd1bb6066b6e2::t_3da30cef61fa42 1-35
+pyrightconfig.json
+  s_5bd1bb6066b6e2::t_c5cb2b019ed64f 1-8
+rubric.md
+  s_5bd1bb6066b6e2::t_55bc6d2176edde 1-39
+scripts/setup_context_hub.py
+  s_5bd1bb6066b6e2::t_454d6bf082dba0 1-44
+scripts/setup_workspace.py
+  s_5bd1bb6066b6e2::t_832026fd1282ec 1-357
+scripts/teardown_context_hub.py
+  s_5bd1bb6066b6e2::t_3f7f9d8a5c6df0 1-96
+src/concierge/__init__.py
+  s_5bd1bb6066b6e2::t_173580d4e7c376 1-3
+src/concierge/app.py
+  s_5bd1bb6066b6e2::t_458fbd62d1fae5 1-103
+src/concierge/context.py
+  s_5bd1bb6066b6e2::t_2b989a6d369f5a 1-50
+src/concierge/context_hub.py
+  s_5bd1bb6066b6e2::t_12eb9c3780e651 1-223
+src/concierge/governance.py
+  s_5bd1bb6066b6e2::t_3853cbd5af173e 1-29
+src/concierge/kb/account_opening.md
+  s_5bd1bb6066b6e2::t_37a216e7c22574 1-32
+src/concierge/kb/autopay.md
+  s_5bd1bb6066b6e2::t_72317b7864d63a 1-23
+src/concierge/kb/branches_atms.md
+  s_5bd1bb6066b6e2::t_14f1c6ba5936b2 1-25
+src/concierge/kb/checking_accounts.md
+  s_5bd1bb6066b6e2::t_9ac90cbddcbb8b 1-33
+src/concierge/kb/credit_cards.md
+  s_5bd1bb6066b6e2::t_6f0b39e69931e5 1-28
+src/concierge/kb/debit_cards.md
+  s_5bd1bb6066b6e2::t_a2ad2fbb137b08 1-24
+src/concierge/kb/direct_deposit.md
+  s_5bd1bb6066b6e2::t_f0d90aa45a1b1b 1-19
+src/concierge/kb/disputes.md
+  s_5bd1bb6066b6e2::t_7808be73563f9f 1-28
+src/concierge/kb/fees.md
+  s_5bd1bb6066b6e2::t_ca0ec76ac2e0e0 1-36
+src/concierge/kb/fraud.md
+  s_5bd1bb6066b6e2::t_ee3425ad91580e 1-25
+src/concierge/kb/international.md
+  s_5bd1bb6066b6e2::t_fe27d7dd20ff38 1-21
+src/concierge/kb/mobile_banking.md
+  s_5bd1bb6066b6e2::t_5027c61fa835e0 1-29
+src/concierge/kb/online_banking.md
+  s_5bd1bb6066b6e2::t_2d7325fb322fea 1-25
+src/concierge/kb/overdraft.md
+  s_5bd1bb6066b6e2::t_7be3a33dfd4dbb 1-20
+src/concierge/kb/savings_accounts.md
+  s_5bd1bb6066b6e2::t_de09a63e3bd6a1 1-21
+src/concierge/kb/security.md
+  s_5bd1bb6066b6e2::t_cfe2c83b492df7 1-32
+src/concierge/kb/statements.md
+  s_5bd1bb6066b6e2::t_ccca82f556063a 1-18
+src/concierge/kb/transfers.md
+  s_5bd1bb6066b6e2::t_31362a5d1bcfd7 1-22
+src/concierge/kb/wires.md
+  s_5bd1bb6066b6e2::t_a4bc806c22a036 1-33
+src/concierge/kb/zelle.md
+  s_5bd1bb6066b6e2::t_d1a96e4af9074c 1-25
+src/concierge/prompts.py
+  s_5bd1bb6066b6e2::t_36a7346a676b43 1-39
+src/concierge/state.py
+  s_5bd1bb6066b6e2::t_cc73c1ac1159b4 1-16
+src/concierge/tools.py
+  s_5bd1bb6066b6e2::t_6c9728fff6a6dd 1-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8b900fb10f0ca9d8f615bb0aeb894d9ce67b4206",
+  "prompts": {},
+  "sessions": {
+    "s_5bd1bb6066b6e2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "546134e3-c4e1-4db3-a79e-4c03e660144a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Eli Verdun <eli.verdun@langchain.dev>"
+    }
+  }
+}
