@@ -9,6 +9,7 @@ dependencies = [
     "langchain>=0.3.27",
     "langchain-core>=0.3.0",
     "langchain-azure-ai>=0.1.4",
+    "langchain-openai>=1.1.14,<2.0.0",
     "azure-identity>=1.19.0",
     "langchain-text-splitters>=0.3.0",
     "langsmith>=0.8.5",

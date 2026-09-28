@@ -41,10 +41,19 @@ jobs:
             experiment_prefix: pii-leak
 
     env:
-      # Azure AI Foundry inference for the agent + judge
+      # OpenAI-compatible gateway + Entra auth for the agent and offline judge
+      GATEWAY_BASE_URL: ${{ vars.GATEWAY_BASE_URL }}
+      GATEWAY_MODEL: ${{ vars.GATEWAY_MODEL }}
+      ENTRA_TENANT_ID: ${{ secrets.ENTRA_TENANT_ID }}
+      ENTRA_CLIENT_ID: ${{ secrets.ENTRA_CLIENT_ID }}
+      ENTRA_CLIENT_SECRET: ${{ secrets.ENTRA_CLIENT_SECRET }}
+      ENTRA_SCOPE: ${{ vars.ENTRA_SCOPE }}
+      GATEWAY_KEY_HEADER: ${{ vars.GATEWAY_KEY_HEADER }}
+      GATEWAY_KEY: ${{ secrets.GATEWAY_KEY }}
+      GATEWAY_API_VERSION: ${{ vars.GATEWAY_API_VERSION }}
+      # Direct Foundry embeddings
       AZURE_AI_PROJECT_ENDPOINT: ${{ secrets.AZURE_AI_PROJECT_ENDPOINT }}
       AZURE_AI_API_KEY: ${{ secrets.AZURE_AI_API_KEY }}
-      CONCIERGE_MODEL: ${{ vars.CONCIERGE_MODEL || 'gpt-4o-mini' }}
       CONCIERGE_EMBEDDING_MODEL: ${{ vars.CONCIERGE_EMBEDDING_MODEL || 'text-embedding-3-small' }}
       EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL || 'gpt-4o' }}
       # LangSmith tracing + experiments
@@ -69,6 +78,9 @@ jobs:
 
       - name: Install dependencies
         run: uv sync
+
+      - name: Test gateway configuration
+        run: uv run python -m unittest discover -s tests -v
 
       - name: Run experiment (${{ matrix.alias }})
         id: experiment

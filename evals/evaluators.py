@@ -41,12 +41,12 @@ from concierge.azure_foundry import make_chat_model
 # so this has to run before the module body reaches _make_judge().
 load_dotenv(override=True)
 
-# The judge deployment name in Azure AI Foundry. Override with EVAL_JUDGE_MODEL.
+# The judge model/deployment name expected by the gateway.
 JUDGE_MODEL_NAME = os.getenv("EVAL_JUDGE_MODEL", "gpt-4o")
 
 
 def _make_judge() -> BaseChatModel:
-    """LLM-as-judge client, running on Azure AI Foundry."""
+    """LLM-as-judge client using the same gateway and Entra auth as the agent."""
     return make_chat_model(model=JUDGE_MODEL_NAME, temperature=0)
 
 

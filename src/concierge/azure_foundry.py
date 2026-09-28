@@ -1,36 +1,55 @@
-"""Azure AI Foundry model factory.
-
-This module builds the two model clients the concierge needs — a chat model and
-an embeddings model — and points both at an Azure AI Foundry project. Inference
-runs directly against Foundry. There is no gateway in the request path.
-
-Both clients read one endpoint and follow one auth rule:
-
-- Endpoint: ``AZURE_AI_PROJECT_ENDPOINT`` (the Foundry project endpoint, e.g.
-  ``https://<resource>.services.ai.azure.com/api/projects/<project>``).
-- Auth: set ``AZURE_AI_API_KEY`` to use an API key. Leave it empty to use
-  Microsoft Entra ID through ``DefaultAzureCredential`` (managed identity,
-  ``az login``, environment credentials, and so on).
-
-The Foundry clients (`AzureAIOpenAIApiChatModel`, `AzureAIOpenAIApiEmbeddingsModel`)
-subclass the OpenAI clients. A string credential is used as the API key. A
-``None`` credential falls back to ``DefaultAzureCredential``.
-"""
+"""Gateway chat clients with Entra auth, plus direct Foundry embeddings."""
 
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
+from functools import lru_cache
 
+from azure.identity import ClientSecretCredential, get_bearer_token_provider
 from dotenv import load_dotenv
-from langchain_azure_ai.chat_models import AzureAIOpenAIApiChatModel
 from langchain_azure_ai.embeddings import AzureAIOpenAIApiEmbeddingsModel
+from langchain_openai import ChatOpenAI
 
 # override=True so .env wins over anything exported in the shell, no matter
 # which entry point imported this module first.
 load_dotenv(override=True)
 
-DEFAULT_CHAT_MODEL = "gpt-4o-mini"
 DEFAULT_EMBEDDING_MODEL = "text-embedding-3-small"
+
+
+def _required_env(name: str) -> str:
+    value = os.getenv(name, "").strip()
+    if not value:
+        raise RuntimeError(f"{name} is not set. Configure it in .env; see .env.example.")
+    return value
+
+
+@lru_cache(maxsize=1)
+def _entra_token_provider() -> Callable[[], str]:
+    """Reuse Entra's cached, automatically refreshed client-credentials token.
+
+    Restart the process after changing the Entra settings.
+    """
+    scope = _required_env("ENTRA_SCOPE")
+    credential = ClientSecretCredential(
+        tenant_id=_required_env("ENTRA_TENANT_ID"),
+        client_id=_required_env("ENTRA_CLIENT_ID"),
+        client_secret=_required_env("ENTRA_CLIENT_SECRET"),
+    )
+    return get_bearer_token_provider(credential, scope)
+
+
+def _gateway_headers() -> dict[str, str]:
+    """Optional subscription/API key required by the gateway itself."""
+    name, value = os.getenv("GATEWAY_KEY_HEADER"), os.getenv("GATEWAY_KEY")
+    return {name: value} if name and value else {}
+
+
+def _gateway_query() -> dict[str, str]:
+    """Optional API version for gateways exposing Azure-shaped routes."""
+    version = os.getenv("GATEWAY_API_VERSION")
+    return {"api-version": version} if version else {}
 
 
 def _project_endpoint() -> str:
@@ -55,17 +74,20 @@ def _credential() -> str | None:
 
 def make_chat_model(
     *, model: str | None = None, temperature: float = 0.2
-) -> AzureAIOpenAIApiChatModel:
-    """Build the Foundry chat client.
+) -> ChatOpenAI:
+    """Build an OpenAI-compatible gateway chat client.
 
-    ``model`` is the Foundry model deployment name. It defaults to
-    ``CONCIERGE_MODEL`` from the environment, then ``gpt-4o-mini``.
+    ``model`` overrides GATEWAY_MODEL, e.g. for the offline eval judge.
+    GATEWAY_BASE_URL is the complete route prefix before /chat/completions.
     """
-    return AzureAIOpenAIApiChatModel(
-        model=model or os.getenv("CONCIERGE_MODEL", DEFAULT_CHAT_MODEL),
+    return ChatOpenAI(
+        base_url=_required_env("GATEWAY_BASE_URL"),
+        model=model or _required_env("GATEWAY_MODEL"),
         temperature=temperature,
-        project_endpoint=_project_endpoint(),
-        credential=_credential(),
+        api_key=_entra_token_provider(),
+        default_headers=_gateway_headers(),
+        default_query=_gateway_query(),
+        use_responses_api=False,
     )
 
 

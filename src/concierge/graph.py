@@ -28,9 +28,8 @@ SYSTEM_PROMPT = get_prompt()
 
 
 def _make_model():
-    # Calls Azure AI Foundry directly (no gateway). The endpoint and auth come
-    # from .env through concierge.azure_foundry. LANGSMITH_API_KEY is for
-    # tracing only.
+    # Calls the configured gateway with Entra bearer-token auth.
+    # LANGSMITH_API_KEY is for tracing only.
     client = make_chat_model(temperature=0.2)
     return client.bind_tools(TOOLS)
 

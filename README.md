@@ -2,23 +2,17 @@
 
 A personal-banking customer service agent. It runs on a LangGraph `StateGraph`
 and answers questions from a synthetic knowledge base plus mocked customer-data
-tools. All inference runs on **Azure AI Foundry**. The agent calls Foundry
-directly. There is no gateway in the request path.
-
-Three model calls use Foundry:
-
-- The agent chat model (`src/concierge/graph.py`).
-- The retrieval embeddings (`src/concierge/retrieval.py`).
-- The offline eval judge (`evals/evaluators.py`).
-
-All three read one endpoint and one auth setting from `.env`. See
-[Setup](#setup).
+tools. The agent chat model and offline eval judge call an **OpenAI-compatible
+gateway** using Microsoft Entra client-credentials tokens. The gateway can be
+Kong, Apigee, AWS API Gateway, MuleSoft, APIM, or another compatible proxy; its
+route does not need to follow Azure's URL layout. Retrieval embeddings still
+call **Azure AI Foundry** directly. See [Setup](#setup).
 
 ## What's in here
 
 ```
 src/concierge/
-  azure_foundry.py   Builds the Foundry chat + embeddings clients (endpoint + auth)
+  azure_foundry.py   Builds gateway chat + direct Foundry embeddings clients
   graph.py           StateGraph -> agent (LLM) <-> ToolNode
   app.py             FastAPI custom routes (mounts the React UI at /concierge/)
   state.py           MessagesState + retrieval_calls counter
@@ -52,8 +46,11 @@ rubric.md            Annotation-queue rubric for human review of flagged traces
 ## Prerequisites
 
 - Python 3.13 and [`uv`](https://docs.astral.sh/uv/).
-- An Azure AI Foundry project with two deployments: a chat model and an
-  embeddings model.
+- An OpenAI-compatible gateway exposing `/chat/completions`, with access to
+  the agent and offline judge models and support for Entra bearer tokens.
+- An Entra application registration with client credentials and permission
+  to request the configured resource scope.
+- An Azure AI Foundry project with an embeddings deployment.
 - A LangSmith account for tracing, datasets, and deployment.
 
 ## Setup
@@ -65,15 +62,27 @@ uv sync
 cp .env.example .env
 ```
 
-Set these Azure AI Foundry variables in `.env`:
+Set these gateway variables in `.env`:
 
 | Var | Purpose |
 |---|---|
-| `AZURE_AI_PROJECT_ENDPOINT` | Your Foundry project endpoint (from the Foundry portal, project Overview) |
-| `AZURE_AI_API_KEY` | Your Foundry API key. Leave empty to use Microsoft Entra ID instead |
-| `CONCIERGE_MODEL` | Chat model **deployment name** (default `gpt-4o-mini`) |
-| `CONCIERGE_EMBEDDING_MODEL` | Embedding model **deployment name** (default `text-embedding-3-small`) |
-| `EVAL_JUDGE_MODEL` | Judge deployment name for offline evals (default `gpt-4o`) |
+| `GATEWAY_BASE_URL` | Complete gateway route before `/chat/completions`, e.g. `https://gateway.example.com/llm/v1` |
+| `GATEWAY_MODEL` | Chat model or deployment name expected by the gateway (required; replaces `CONCIERGE_MODEL`) |
+| `ENTRA_TENANT_ID` | Entra tenant ID |
+| `ENTRA_CLIENT_ID` | Entra application/client ID |
+| `ENTRA_CLIENT_SECRET` | Entra client secret |
+| `ENTRA_SCOPE` | Resource scope accepted by your gateway, e.g. `<resource>/.default` |
+| `GATEWAY_KEY_HEADER` / `GATEWAY_KEY` | Optional gateway subscription/API-key header name and value |
+| `GATEWAY_API_VERSION` | Optional `api-version` query parameter for routes that require it |
+| `EVAL_JUDGE_MODEL` | Offline judge model/deployment name expected by the gateway (default `gpt-4o`) |
+
+Retrieval embeddings retain their separate Foundry configuration:
+
+| Var | Purpose |
+|---|---|
+| `AZURE_AI_PROJECT_ENDPOINT` | Foundry project endpoint (from the Foundry portal, project Overview) |
+| `AZURE_AI_API_KEY` | Foundry API key; leave empty to use `DefaultAzureCredential` |
+| `CONCIERGE_EMBEDDING_MODEL` | Embedding deployment name (default `text-embedding-3-small`) |
 
 Set these LangSmith variables in `.env`:
 
@@ -86,12 +95,18 @@ Set these LangSmith variables in `.env`:
 
 ### Authentication
 
-The agent supports two auth methods. Pick one:
+Chat requests use `ClientSecretCredential` and a cached Entra token provider
+passed as `ChatOpenAI(api_key=...)`. The OpenAI SDK invokes the provider before
+each request and sends `Authorization: Bearer <token>`; Azure Identity caches
+and refreshes tokens. Restart the process after changing Entra settings.
+Gateway-specific headers and query parameters use `default_headers` and
+`default_query`. Use a separate header for gateway keys; `Authorization` is
+reserved for the Entra bearer token. Chat uses `/chat/completions` with
+`use_responses_api=False`, including the offline judge.
 
-- **API key:** set `AZURE_AI_API_KEY`. This is the fastest way to start.
-- **Microsoft Entra ID:** leave `AZURE_AI_API_KEY` empty. The clients then use
-  `DefaultAzureCredential`. Run `az login`, or assign a managed identity, and
-  grant it the **Azure AI Developer** role on the Foundry project.
+Embeddings use `AZURE_AI_API_KEY` when set, otherwise `DefaultAzureCredential`
+(managed identity, `az login`, or environment credentials). Grant the embedding
+identity the **Azure AI Developer** role on the Foundry project.
 
 ### Seed Context Hub (one-time)
 
@@ -177,8 +192,8 @@ uv run python evals/run_experiment.py pii             # PII-leak dataset
 ```
 
 `run_experiment.py` takes the dataset as a positional argument. Each choice
-selects its dataset name, evaluators, and experiment prefix. The judge runs on
-Azure AI Foundry using `EVAL_JUDGE_MODEL`.
+selects its dataset name, evaluators, and experiment prefix. The judge calls the configured gateway
+using `EVAL_JUDGE_MODEL` and the same Entra credentials as the agent.
 
 ## Score live traces (online evals)
 
@@ -227,10 +242,12 @@ comment per dataset linking to that experiment.
 
 Required GitHub configuration:
 
-- Secrets: `AZURE_AI_PROJECT_ENDPOINT`, `AZURE_AI_API_KEY`, `LANGSMITH_API_KEY`,
-  `LANGSMITH_WORKSPACE_ID`.
-- Variables (optional): `LANGSMITH_PROJECT`, `CONCIERGE_MODEL`,
-  `CONCIERGE_EMBEDDING_MODEL`, `EVAL_JUDGE_MODEL`.
+- Secrets: `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`, `ENTRA_CLIENT_SECRET`,
+  `AZURE_AI_PROJECT_ENDPOINT`, `AZURE_AI_API_KEY`, `LANGSMITH_API_KEY`,
+  `LANGSMITH_WORKSPACE_ID`; optionally `GATEWAY_KEY`.
+- Variables (required): `GATEWAY_BASE_URL`, `GATEWAY_MODEL`, `ENTRA_SCOPE`.
+- Variables (optional): `GATEWAY_KEY_HEADER`, `GATEWAY_API_VERSION`,
+  `LANGSMITH_PROJECT`, `CONCIERGE_EMBEDDING_MODEL`, `EVAL_JUDGE_MODEL`.
 
 ## Deploy to LangSmith Cloud
 
@@ -247,8 +264,9 @@ The manifest (`langgraph.json`) registers one assistant `agent`
 (`src/concierge/graph.py:graph`) and one custom HTTP app
 (`src/concierge/app.py:app`) that mounts the React UI at `/concierge/`.
 
-Set the Azure AI Foundry and LangSmith environment variables on the deployment
-so the agent can reach Foundry at runtime.
+Set the gateway, Entra, Foundry embeddings, and LangSmith environment variables
+listed in [Setup](#setup) on the deployment. Both the gateway and Foundry
+embeddings endpoint must be reachable at runtime.
 
 LangSmith Cloud protects the default `/threads`, `/runs`, and `/assistants`
 endpoints with the workspace API key. The React client passes the key two ways:
@@ -258,3 +276,13 @@ endpoints with the workspace API key. The React client passes the key two ways:
   The frontend saves the key and strips it from the URL.
 - **Manual:** `localStorage.setItem("concierge:apiKey", "lsv2_pt_...")` from the
   browser console.
+
+## Test gateway configuration
+
+```bash
+uv run python -m unittest discover -s tests -v
+```
+
+These tests use mocked HTTP and credentials to verify sync and async gateway
+routing, token-provider calls per request, optional headers/query parameters,
+judge overrides, and the separate Foundry embeddings configuration.
