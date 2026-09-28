@@ -1,0 +1,28 @@
+.env.example
+  h_581153be4e874b 2,5-7,9-13,15-18,20-23,26-36
+.github/workflows/evals-on-pr.yml
+  h_581153be4e874b 44-54,82-84
+README.md
+  h_581153be4e874b 5-9,15,49-53,65-79,83-85,98-105,107-109,195-196,245-250,267-269,279-288
+evals/evaluators.py
+  h_581153be4e874b 44,49
+pyproject.toml
+  h_581153be4e874b 12
+src/concierge/azure_foundry.py
+  h_581153be4e874b 1,6-7,9,12,21-54,77-78,80-81,83-85,87-90
+src/concierge/graph.py
+  h_581153be4e874b 31-32
+tests/test_gateway_model.py
+  h_581153be4e874b 1-170
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "54627731b72c75f5528a9ad61d773274ad5f8fbe",
+  "prompts": {},
+  "humans": {
+    "h_581153be4e874b": {
+      "author": "Eli Verdun <eli.verdun@langchain.dev>"
+    }
+  }
+}
